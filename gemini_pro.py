@@ -1,43 +1,62 @@
-import google.generativeai as genai
-from dotenv import load_dotenv
 import os
 from datetime import datetime
-import re
-import google.generativeai as genai
 from dotenv import load_dotenv
-import os
-from datetime import datetime
+import google.generativeai as genai
 import re
 
 
 class ChatHistoryManager:
+    """
+    Manages the chat history by allowing messages to be added, saved to a file, and displayed.
+
+    Attributes:
+        directory (str): The directory where chat history files are stored.
+
+    Methods:
+        _get_timestamp(file_format=False): Returns the current timestamp in a specified format.
+        start_new_session(): Starts a new chat session and creates a new file.
+        add_message(role, text): Adds a message to the current chat session file.
+        display(): Displays the content of the current chat session file.
+    """
+
     def __init__(self, directory="chat_export"):
         self.directory = directory
-        self.current_file = None  # Stores the current chat session file
+        self.current_file = None
+
+    def _get_timestamp(self, file_format=False):
+        format_str = "%Y-%m-%d_%H-%M-%S" if file_format else "%Y-%m-%d %H:%M:%S"
+        return datetime.now().strftime(format_str)
 
     def start_new_session(self):
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"{timestamp}.txt"
+        filename = f"{self._get_timestamp(file_format=True)}.txt"
         self.current_file = os.path.join(self.directory, filename)
-        with open(self.current_file, "w", encoding="utf-8") as file:
-            file.write("--- New Session ---\n")
+        self.add_message("system", "--- New Session ---")
 
     def add_message(self, role, text):
         if not self.current_file:
             self.start_new_session()
+
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         with open(self.current_file, "a", encoding="utf-8") as file:
             file.write(f"{timestamp} {role}: {text}\n")
 
     def display(self):
         if self.current_file:
-            with open(self.current_file, "r", encoding="utf-8") as file:
+            with open(self.current_file, encoding="utf-8") as file:
                 print(file.read())
         else:
             print("No active chat session yet.")
 
 
 def main():
+    """
+    Manages the chat session by interacting with the user, displaying chat history, and handling chat responses.
+
+    Returns:
+        None
+    """
+
     load_dotenv()
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
@@ -70,8 +89,10 @@ def main():
     )
     chat = model.start_chat(history=[])
 
+    user_name = input("Please let know your name: ")
+
     while True:
-        user_input = input("User: ").strip()
+        user_input = input(f"{user_name}: ").strip()
         if not user_input:
             print("Please enter some text.")
             continue
@@ -92,15 +113,19 @@ def main():
 
         try:
             response = chat.send_message(user_input, stream=True)
-            response_text = ""
-            for chunk in response:
-                if chunk.text.endswith("."):
-                    response_text += chunk.text
-                else:
-                    response_text += re.sub(r"\s*$", ".", chunk.text)
-                print(chunk.text)
+            response_text = "".join(
+                [
+                    (
+                        chunk.text
+                        if chunk.text.endswith(".")
+                        else re.sub(r"\s*$", ".", chunk.text)
+                    )
+                    for chunk in response
+                ]
+            )
+            print(response_text)
 
-            history_manager.add_message("user", user_input)
+            history_manager.add_message(user_name, user_input)
             history_manager.add_message("gemini", response_text)
         except Exception as e:
             print(f"An error occurred: {e}")

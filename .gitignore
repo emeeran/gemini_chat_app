@@ -29,6 +29,10 @@ share/python-wheels/
 .installed.cfg
 *.egg
 .idea/
+dist/
+.vscode/
+build/
+chat_export/
 
 MANIFEST
 

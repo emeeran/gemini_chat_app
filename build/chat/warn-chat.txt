@@ -32,7 +32,7 @@ missing module named fcntl - imported by subprocess (optional), tqdm.utils (dela
 missing module named multiprocessing.set_start_method - imported by multiprocessing (top-level), multiprocessing.spawn (top-level)
 missing module named multiprocessing.get_start_method - imported by multiprocessing (top-level), multiprocessing.spawn (top-level)
 missing module named multiprocessing.RLock - imported by multiprocessing (delayed, conditional, optional), tqdm.std (delayed, conditional, optional)
-missing module named pyimod02_importers - imported by D:\CODING\Projects\Finished\gemini_chat_app_finished\.venv\Lib\site-packages\PyInstaller\hooks\rthooks\pyi_rth_pkgutil.py (delayed)
+missing module named pyimod02_importers - imported by D:\CODING\Projects\Finished\gemini_chat_app\.venv\Lib\site-packages\PyInstaller\hooks\rthooks\pyi_rth_pkgutil.py (delayed)
 missing module named 'IPython.core' - imported by dotenv.ipython (top-level)
 missing module named OpenSSL - imported by urllib3.contrib.pyopenssl (top-level), google.auth.transport._mtls_helper (delayed), google.auth.transport.requests (delayed, optional)
 missing module named 'cryptography.hazmat' - imported by google.auth.crypt._cryptography_rsa (top-level), google.auth.crypt.es256 (top-level), google.auth.transport._custom_tls_signer (delayed)
